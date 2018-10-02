@@ -19,11 +19,13 @@
 		<version.springboot>2.0.5.RELEASE</version.springboot>
 
 		<version.misaka.common>1.0.0</version.misaka.common>
+		<version.misaka.web>1.0.0</version.misaka.web>
+		<version.misaka.biz>1.0.0</version.misaka.biz>
 	</properties>
 
 	<modules>
 		<module>./misaka-common</module>
-		<module>./misaka-service</module>
+		<module>./misaka-biz</module>
 		<module>./misaka-web</module>
 	</modules>
 

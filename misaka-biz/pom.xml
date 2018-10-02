@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.misaka</groupId>
-    <artifactId>misaka-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>misaka-biz</artifactId>
+    <version>${version.misaka.biz}</version>
     <packaging>jar</packaging>
 
-    <name>misaka-service</name>
-    <description>服务层</description>
+    <name>misaka-biz</name>
+    <description>业务层</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -26,12 +26,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.misaka</groupId>
-            <artifactId>misaka-common</artifactId>
-            <version>${version.misaka.common}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>

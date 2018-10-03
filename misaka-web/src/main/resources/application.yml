@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    druid:
+      url: jdbc:mysql://localhost:3306/misaka
+      username: java
+      password: java1234
+      driver-class-name: com.mysql.jdbc.Driver
+      db-type: com.alibaba.druid.pool.DruidDataSource
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+
+snowflake:
+  id:
+    #  终端id
+    terminal: 1
+    #  数据中心id
+    cluster: 1

@@ -31,4 +31,5 @@ class ResultModel @JvmOverloads constructor(val data: Any? = null) {
     }
 
     fun ok() = send(ResultCode.RESULT_OK)
+    fun info(info: String) = send(code = ResultCode.RESULT_OK.code, info = info)
 }

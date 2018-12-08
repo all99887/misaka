@@ -1,6 +1,9 @@
 package com.misaka.biz.service
 
+import com.misaka.common.model.dto.UserLoginDto
+import com.misaka.common.model.dto.UserLoginRes
 import com.misaka.common.model.dto.UserRegisterDto
+import com.misaka.common.model.dto.UserRegisterRes
 
 /**
  * @Author: lyx
@@ -9,6 +12,8 @@ import com.misaka.common.model.dto.UserRegisterDto
  */
 interface IUserService {
 
-    fun registerUser(user: UserRegisterDto)
+    fun login(user: UserLoginDto): UserLoginRes
+
+    fun registerUser(user: UserRegisterDto): UserRegisterRes
 
 }

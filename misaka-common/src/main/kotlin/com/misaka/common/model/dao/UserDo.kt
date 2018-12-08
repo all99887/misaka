@@ -3,6 +3,7 @@ package com.misaka.common.model.dao
 import com.baomidou.mybatisplus.annotation.IdType
 import com.baomidou.mybatisplus.annotation.TableId
 import com.baomidou.mybatisplus.annotation.TableName
+import com.misaka.common.model.redis.UserRedisBo
 import java.time.LocalDateTime
 
 /**
@@ -20,8 +21,16 @@ data class UserDo(
         var email: String? = null,
         var status: Int? = null,
         var createTime: LocalDateTime? = null,
+        var updateTime: LocalDateTime? = null,
         var lastLoginTime: LocalDateTime? = null,
         var realName: String? = null,
         var lastLoginIp: String? = null
-) {
+)
+
+fun UserDo.toRedisBo():UserRedisBo{
+        val userRedisBo = UserRedisBo()
+        userRedisBo.userId = this.userId
+        userRedisBo.userName = this.userName
+        userRedisBo.realName = this.realName
+        return userRedisBo
 }

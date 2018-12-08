@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    druid:
+      url: jdbc:mysql://localhost:3306/misaka
+      username: java
+      password: java1234
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password: 123456
+snowflake:
+  id:
+    #  终端id
+    terminal: 1
+    #  数据中心id
+    cluster: 1

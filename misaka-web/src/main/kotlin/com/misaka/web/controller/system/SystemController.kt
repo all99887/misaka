@@ -1,21 +1,28 @@
 package com.misaka.web.controller.system
 
 import cn.hutool.extra.servlet.ServletUtil
-import com.misaka.biz.mapper.UserMapper
+import com.misaka.biz.component.RedisComponent
 import com.misaka.biz.service.IUserService
-import com.misaka.common.exception.ParamsFormatException
-import com.misaka.web.model.vo.request.LoginVo
-import com.misaka.web.model.vo.request.RegisterVo
-import com.misaka.web.model.vo.request.toRegisterDto
+import com.misaka.common.consts.SUCCESS
+import com.misaka.common.model.dao.toRedisBo
+import com.misaka.common.model.dto.UserLoginRes
+import com.misaka.common.model.dto.UserRegisterRes
+import com.misaka.common.model.redis.UserRedisBo
+import com.misaka.web.model.vo.request.LoginReq
+import com.misaka.web.model.vo.request.RegisterReq
+import com.misaka.web.model.vo.request.toDto
 import com.misaka.web.model.vo.response.ResultModel
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.validation.BindingResult
+import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletRequest
-import javax.validation.Valid
 
 /**
  * 系统相关操作controller
@@ -23,6 +30,8 @@ import javax.validation.Valid
  * @Date: 2018/10/2 20:56
  * @Version 1.0
  */
+
+@Api("系统相关相关的api")
 @RestController
 @RequestMapping("/system")
 class SystemController {
@@ -30,29 +39,33 @@ class SystemController {
     @Autowired
     lateinit var userService: IUserService
 
+    @Autowired
+    lateinit var userRedis : RedisComponent<UserRedisBo>
+
+    @ApiOperation(value = "登录接口", notes = "登录接口")
     @PostMapping("/login")
-    fun login(@Valid loginVo : LoginVo, bindingResult:BindingResult): ResponseEntity<ResultModel> {
-        if (bindingResult.hasErrors()){
-            throw ParamsFormatException("数据格式错误")
+    fun login(@ModelAttribute @Validated loginReq : LoginReq): ResponseEntity<ResultModel> {
+
+        val loginDto = loginReq.toDto()
+        val result = userService.login(loginDto)
+
+        return when (result.result) {
+            SUCCESS -> {
+                val userRedisBo = result.user?.toRedisBo()
+                if(userRedisBo != null){
+                    userRedis.put("test", userRedisBo)
+                }
+
+                val userRedisBo2 = userRedis.get("test")
+
+                println(userRedisBo2)
+
+                ResultModel(null).ok()
+            }
+            UserLoginRes.USER_INFO_ERROR -> ResultModel(null).info("用户名或密码错误")
+            UserLoginRes.USER_STAUTS_ERROR -> ResultModel(null).info("用户已被停用")
+            else -> ResultModel(null).ok()
         }
-
-        println(loginVo)
-
-        return ResultModel(null).ok()
     }
-
-    @PostMapping("/register")
-    fun register(@Valid registerVo: RegisterVo, bindingResult: BindingResult, request: HttpServletRequest): ResponseEntity<ResultModel> {
-        if (bindingResult.hasErrors()) {
-            throw ParamsFormatException("数据格式错误")
-        }
-
-        val registerDto = registerVo.toRegisterDto()
-        registerDto.lastLoginIp = ServletUtil.getClientIP(request)
-        userService.registerUser(registerDto)
-
-        return ResultModel(null).ok()
-    }
-
 
 }

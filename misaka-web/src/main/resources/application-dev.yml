@@ -1,7 +1,7 @@
 spring:
   datasource:
     druid:
-      url: jdbc:mysql://localhost:3306/misaka
+      url: jdbc:mysql://localhost:3306/misaka?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
       username: java
       password: java1234
   redis:

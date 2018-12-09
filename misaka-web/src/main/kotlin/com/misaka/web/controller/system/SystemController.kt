@@ -1,17 +1,21 @@
 package com.misaka.web.controller.system
 
+import cn.hutool.core.lang.UUID
 import cn.hutool.extra.servlet.ServletUtil
 import com.misaka.biz.component.RedisComponent
 import com.misaka.biz.service.IUserService
 import com.misaka.common.consts.SUCCESS
+import com.misaka.common.consts.USER_REDIS_KEY
 import com.misaka.common.model.dao.toRedisBo
 import com.misaka.common.model.dto.UserLoginRes
 import com.misaka.common.model.dto.UserRegisterRes
 import com.misaka.common.model.redis.UserRedisBo
+import com.misaka.web.controller.BaseController
 import com.misaka.web.model.vo.request.LoginReq
 import com.misaka.web.model.vo.request.RegisterReq
 import com.misaka.web.model.vo.request.toDto
 import com.misaka.web.model.vo.response.ResultModel
+import com.misaka.web.model.vo.response.UserVo
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
@@ -34,17 +38,14 @@ import javax.servlet.http.HttpServletRequest
 @Api("系统相关相关的api")
 @RestController
 @RequestMapping("/system")
-class SystemController {
+class SystemController: BaseController(){
 
     @Autowired
     lateinit var userService: IUserService
 
-    @Autowired
-    lateinit var userRedis : RedisComponent<UserRedisBo>
-
     @ApiOperation(value = "登录接口", notes = "登录接口")
     @PostMapping("/login")
-    fun login(@ModelAttribute @Validated loginReq : LoginReq): ResponseEntity<ResultModel> {
+    fun login(@ModelAttribute @Validated loginReq : LoginReq, request: HttpServletRequest): ResponseEntity<ResultModel> {
 
         val loginDto = loginReq.toDto()
         val result = userService.login(loginDto)
@@ -52,15 +53,11 @@ class SystemController {
         return when (result.result) {
             SUCCESS -> {
                 val userRedisBo = result.user?.toRedisBo()
+                val token = UUID.randomUUID().toString(true)
                 if(userRedisBo != null){
-                    userRedis.put("test", userRedisBo)
+                    userRedis.put(USER_REDIS_KEY + token, userRedisBo)
                 }
-
-                val userRedisBo2 = userRedis.get("test")
-
-                println(userRedisBo2)
-
-                ResultModel(null).ok()
+                ResultModel(UserVo(userRedisBo?.userName?:"", userRedisBo?.realName?:"", token)).ok()
             }
             UserLoginRes.USER_INFO_ERROR -> ResultModel(null).info("用户名或密码错误")
             UserLoginRes.USER_STAUTS_ERROR -> ResultModel(null).info("用户已被停用")
